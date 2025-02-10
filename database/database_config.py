@@ -25,24 +25,24 @@ class DatabaseConfig:
             cursor = conn.cursor()
             cursor.executescript(
                 """
-                    CREATE TABLE IF NOT EXISTS contato(
+                    CREATE TABLE IF NOT EXISTS contatos(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         nome VARCHAR(255) NOT NULL,
                         data_nascimento DATE NOT NULL
                     );
-                    CREATE TABLE IF NOT EXISTS email(
+                    CREATE TABLE IF NOT EXISTS emails(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         email VARCHAR(255) NOT NULL,
                         contato_id INTEGER NOT NULL,
-                        FOREIGN KEY (contato_id) REFERENCES contato(id) ON DELETE CASCADE
+                        FOREIGN KEY (contato_id) REFERENCES contatos(id) ON DELETE CASCADE
                     );
-                    CREATE TABLE IF NOT EXISTS telefone(
+                    CREATE TABLE IF NOT EXISTS telefones(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         telefone VARCHAR(255) NOT NULL,
                         contato_id INTEGER NOT NULL,
-                        FOREIGN KEY (contato_id) REFERENCES contato(id) ON DELETE CASCADE
+                        FOREIGN KEY (contato_id) REFERENCES contatos(id) ON DELETE CASCADE
                     );
-                    CREATE TABLE IF NOT EXISTS endereco(
+                    CREATE TABLE IF NOT EXISTS enderecos(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         rua VARCHAR(255) NOT NULL,
                         numero VARCHAR(255) NOT NULL,
@@ -52,7 +52,7 @@ class DatabaseConfig:
                         estado VARCHAR(255) NOT NULL,
                         cep VARCHAR(255) NOT NULL,
                         contato_id INTEGER NOT NULL,
-                        FOREIGN KEY (contato_id) REFERENCES contato(id) ON DELETE CASCADE
+                        FOREIGN KEY (contato_id) REFERENCES contatos(id) ON DELETE CASCADE
                     );
                 """
             )

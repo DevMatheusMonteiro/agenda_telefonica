@@ -3,7 +3,7 @@ from models.contato import Contato
 class ContatoRepository:
     @staticmethod
     def consultar_contatos():
-        comando = "SELECT * FROM contato;"
+        comando = "SELECT * FROM contatos;"
         contatos = []
         try:
             conn = DatabaseConfig.conectar()
@@ -20,7 +20,7 @@ class ContatoRepository:
             DatabaseConfig.desconectar(conn)
     @staticmethod
     def consultar_contato(id: int):
-        comando = "SELECT * FROM contato WHERE id = ?;"
+        comando = "SELECT * FROM contatos WHERE id = ?;"
         try:
             conn = DatabaseConfig.conectar()
             cursor = conn.cursor()
@@ -36,7 +36,7 @@ class ContatoRepository:
     def criar_contato(data: dict):
         nome = data.get("nome")
         data_nascimento = data.get("data_nascimento")
-        comando = "INSERT INTO contato (nome, data_nascimento) VALUES (?, ?) RETURNING id;"
+        comando = "INSERT INTO contatos (nome, data_nascimento) VALUES (?, ?) RETURNING id;"
         try:
             conn = DatabaseConfig.conectar()
             cursor = conn.cursor()
@@ -63,7 +63,7 @@ class ContatoRepository:
             parametros.append(data_nascimento)
         parametros.append(id)
         if values:
-            comando = f"UPDATE contato SET {", ".join(values)} WHERE id = ?;"
+            comando = f"UPDATE contatos SET {", ".join(values)} WHERE id = ?;"
             try:
                 conn = DatabaseConfig.conectar()
                 cursor = conn.cursor()
@@ -76,7 +76,7 @@ class ContatoRepository:
                 DatabaseConfig.desconectar(conn)
     @staticmethod
     def remover_contato(id: int):
-        comando = "DELETE FROM contato WHERE id = ?;"
+        comando = "DELETE FROM contatos WHERE id = ?;"
         try:
             conn = DatabaseConfig.conectar()
             cursor = conn.cursor()
