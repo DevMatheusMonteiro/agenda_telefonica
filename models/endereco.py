@@ -1,5 +1,6 @@
 class Endereco:
-    def __init__(self, rua:str=None, numero:str=None, complemento:str=None, bairro:str=None, municipio:str=None, estado:str=None, cep:str=None):
+    def __init__(self, id:int=None, rua:str=None, numero:str=None, complemento:str=None, bairro:str=None, municipio:str=None, estado:str=None, cep:str=None, contato_id:int=None):
+        self.__id = id
         self.__rua = rua
         self.__numero = numero
         self.__complemento = complemento
@@ -7,6 +8,10 @@ class Endereco:
         self.__municipio = municipio
         self.__estado = estado
         self.__cep = cep
+        self.__contato_id = contato_id
+    @property
+    def id(self):
+        return self.__id
     @property
     def rua(self):
         return self.__rua
@@ -56,3 +61,16 @@ class Endereco:
     def cep(self, cep:str):
         if cep != None and cep.strip() != "":
             self.__cep = cep
+    @property
+    def contato_id(self):
+        return self.__contato_id
+    def to_dict(self):
+        return {
+            "rua": self.rua,
+            "numero": self.numero,
+            "complemento": self.complemento,
+            "bairro": self.bairro,
+            "municipio": self.municipio,
+            "estado": self.estado,
+            "cep": self.cep
+        }

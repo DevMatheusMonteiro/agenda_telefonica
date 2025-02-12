@@ -11,6 +11,9 @@ class Contato:
         self.__telefones = []
         self.__emails = []
     @property
+    def id(self):
+        return self.__id
+    @property
     def nome(self):
         return self.__nome
     @nome.setter
@@ -43,3 +46,5 @@ class Contato:
     def add_email(self, email:Email):
         if isinstance(email, Email):
             self.__emails.append(email)
+    def to_dict(self):
+        return {"id": self.id, "nome": self.nome, "data_nascimento": self.data_nascimento, "endereco": self.endereco.to_dict(), "telefones": [telefone.telefone for telefone in self.telefones], "emails": [email.email for email in self.emails]}
