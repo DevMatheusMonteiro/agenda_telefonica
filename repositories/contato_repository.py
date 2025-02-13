@@ -3,6 +3,9 @@ from models.contato import Contato
 from models.endereco import Endereco
 from models.telefone import Telefone
 from models.email import Email
+from .endereco_repository import EnderecoRepository
+from .email_repository import EmailRepository
+from .telefone_repository import TelefoneRepository
 class ContatoRepository:
     @staticmethod
     def consultar_contatos():
@@ -106,14 +109,19 @@ class ContatoRepository:
     def criar_contato(data: dict):
         nome = data.get("nome")
         data_nascimento = data.get("data_nascimento")
-        comando = "INSERT INTO contatos (nome, data_nascimento) VALUES (?, ?) RETURNING id;"
+        criar_contato = "INSERT INTO contatos (nome, data_nascimento) VALUES (?, ?) RETURNING id;"
+        endereco = data.get("endereco")
+        emails = data.get("emails")
+        telefones = data.get("telefones")
         try:
             conn = DatabaseConfig.conectar()
             cursor = conn.cursor()
-            cursor.execute(comando, (nome, data_nascimento))
-            id = cursor.fetchone()
+            cursor.execute(criar_contato, (nome, data_nascimento))
+            contato_id = cursor.fetchone()[0]
+            endereco["contato_id"] = contato_id
+            EnderecoRepository.criar_endereco(endereco)
             conn.commit()
-            return id[0]
+            return contato_id
         except Exception as e:
             print(e)
         finally:
