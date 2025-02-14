@@ -1,28 +1,26 @@
 import sqlite3
 from os import path
 class DatabaseConfig:
+    conn = None
     @staticmethod
     def conectar():
         BANCO = "database.db"
         BASE_DIR = path.dirname(path.abspath(__file__))
         DIR_BANCO = path.join(BASE_DIR, BANCO)
         try:
-            conn = sqlite3.connect(DIR_BANCO)
-            conn.execute("PRAGMA foreign_keys = ON;")
+            DatabaseConfig.conn = sqlite3.connect(DIR_BANCO)
+            DatabaseConfig.conn.execute("PRAGMA foreign_keys = ON;")
         except Exception as e:
             print(e)
-        return conn
     @staticmethod
-    def desconectar(conn):
-        if conn is not None:
-            conn.close()
+    def desconectar():
+        if DatabaseConfig.conn is not None:
+            DatabaseConfig.conn.close()
     @staticmethod
     def create_tables():
         try:
-            conn = DatabaseConfig.conectar()
-            if conn is None:
-                return print("Erro na conexão com o banco")
-            cursor = conn.cursor()
+            DatabaseConfig.conectar()
+            cursor = DatabaseConfig.conn.cursor()
             cursor.executescript(
                 """
                     CREATE TABLE IF NOT EXISTS contatos(
@@ -56,8 +54,8 @@ class DatabaseConfig:
                     );
                 """
             )
-            conn.commit()
+            DatabaseConfig.conn.commit()
         except Exception as e:
             print(e)
         finally:
-            DatabaseConfig.desconectar(conn)
+            DatabaseConfig.desconectar()

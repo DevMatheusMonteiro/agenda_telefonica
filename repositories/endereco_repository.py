@@ -15,13 +15,35 @@ class EnderecoRepository:
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;
             """
         try:
-            conn = DatabaseConfig.conectar()
-            cursor = conn.cursor()
+            cursor = DatabaseConfig.conn.cursor()
             cursor.execute(comando, (rua, numero, complemento, bairro, municipio, estado, cep, contato_id))
             id = cursor.fetchone()[0]
-            conn.commit()
             return id
         except Exception as e:
-            print(e)
-        finally:
-            DatabaseConfig.desconectar(conn)
+            raise Exception(e)
+    @staticmethod
+    def atualizar_endereco(data: dict):
+        id = data.get("contact_id")
+        values = []
+        parametros = []
+        nome = data.get("nome")
+        data_nascimento = data.get("data_nascimento")
+        if nome:
+            values.append("nome = ?")
+            parametros.append(nome)
+        if data_nascimento:
+            values.append("data_nascimento = ?")
+            parametros.append(data_nascimento)
+        parametros.append(id)
+        if values:
+            comando = f"UPDATE contatos SET {", ".join(values)} WHERE id = ?;"
+            try:
+                conn = DatabaseConfig.conectar()
+                cursor = conn.cursor()
+                cursor.execute(comando, tuple(parametros))
+                conn.commit()
+                return id
+            except Exception as e:
+                print(e)
+            finally:
+                DatabaseConfig.desconectar(conn)

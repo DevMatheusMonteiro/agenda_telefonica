@@ -66,8 +66,8 @@ class ContatoRepository:
                 c.nome, 
                 c.data_nascimento, 
                 e.id as endereco_id,
-                e.rua, 
-                e.numero, 
+                e.rua,
+                e.numero,
                 e.complemento,
                 e.bairro, 
                 e.municipio, 
@@ -84,8 +84,8 @@ class ContatoRepository:
                 WHERE c.id = ?;
             """
         try:
-            conn = DatabaseConfig.conectar()
-            cursor = conn.cursor()
+            DatabaseConfig.conectar()
+            cursor = DatabaseConfig.conn.cursor()
             cursor.execute(comando, (id,))
             registro = cursor.fetchone()
             if registro and not (len(set(registro)) == 1 and list(set(registro))[0] is None):
@@ -104,7 +104,7 @@ class ContatoRepository:
         except Exception as e:
             print(e)
         finally:
-            DatabaseConfig.desconectar(conn)
+            DatabaseConfig.desconectar()
     @staticmethod
     def criar_contato(data: dict):
         nome = data.get("nome")
@@ -114,18 +114,32 @@ class ContatoRepository:
         emails = data.get("emails")
         telefones = data.get("telefones")
         try:
-            conn = DatabaseConfig.conectar()
-            cursor = conn.cursor()
+            DatabaseConfig.conectar()
+            cursor = DatabaseConfig.conn.cursor()
             cursor.execute(criar_contato, (nome, data_nascimento))
             contato_id = cursor.fetchone()[0]
-            endereco["contato_id"] = contato_id
-            EnderecoRepository.criar_endereco(endereco)
-            conn.commit()
-            return contato_id
+            endereco_id = None
+            emails_id = []
+            telefones_id = []
+            if endereco:
+                endereco["contato_id"] = contato_id
+                endereco_id = EnderecoRepository.criar_endereco(endereco)
+            if emails:
+                for email in emails:
+                    email["contato_id"] = contato_id
+                    email_id = EmailRepository.criar_email(email)
+                    emails_id.append(email_id)
+            if telefones:
+                for telefone in telefones:
+                    telefone["contato_id"] = contato_id
+                    telefone_id = TelefoneRepository.criar_telefone(telefone)
+                    telefones_id.append(telefone_id)
+            DatabaseConfig.conn.commit()
+            return (contato_id, endereco_id, emails_id, telefones_id)
         except Exception as e:
             print(e)
         finally:
-            DatabaseConfig.desconectar(conn)
+            DatabaseConfig.desconectar()
     @staticmethod
     def atualizar_contato(data: dict):
         id = data.get("id")
