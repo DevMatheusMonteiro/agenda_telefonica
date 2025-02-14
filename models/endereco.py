@@ -66,11 +66,13 @@ class Endereco:
         return self.__contato_id
     def to_dict(self):
         return {
+            "id": self.id,
             "rua": self.rua,
             "numero": self.numero,
             "complemento": self.complemento,
             "bairro": self.bairro,
             "municipio": self.municipio,
             "estado": self.estado,
-            "cep": self.cep
+            "cep": self.cep,
+            "contato_id": self.contato_id
         }

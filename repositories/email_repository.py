@@ -15,4 +15,21 @@ class EmailRepository:
             return id
         except Exception as e:
             raise Exception(e)
-        
+    @staticmethod
+    def atualizar_email(data: dict):
+        values = []
+        parametros = []
+        id = data.get("id")
+        email = data.get("email")
+        if email and email.strip() != "":
+            values.append("email = ?")
+            parametros.append(email)
+        parametros.append(id)
+        if values:
+            comando = f"UPDATE emails SET {", ".join(values)} WHERE id = ?;"
+            try:
+                cursor = DatabaseConfig.conn.cursor()
+                cursor.execute(comando, tuple(parametros))
+                return id
+            except Exception as e:
+                raise Exception(e)

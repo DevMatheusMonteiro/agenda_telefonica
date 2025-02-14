@@ -34,14 +34,13 @@ class ContatoRepository:
             """
         contatos = []
         try:
-            conn = DatabaseConfig.conectar()
-            cursor = conn.cursor()
+            DatabaseConfig.conectar()
+            cursor = DatabaseConfig.conn.cursor()
             cursor.execute(comando)
             registros = cursor.fetchall()
-            print(registros)
             if registros: 
                 for registro in registros:
-                    contato = Contato(id=registro[0], nome=registro[1], data_nascimento=registro[2], endereco=Endereco(id=registro[3], rua=registro[4], numero=registro[5], complemento=registro[6], bairro=registro[7], municipio=registro[8], estado=registro[9], cep=registro[10]))
+                    contato = Contato(id=registro[0], nome=registro[1], data_nascimento=registro[2], endereco=Endereco(id=registro[3], rua=registro[4], numero=registro[5], complemento=registro[6], bairro=registro[7], municipio=registro[8], estado=registro[9], cep=registro[10], contato_id=registro[0]))
                     if registro[11] is not None and registro[12] is not None:
                         ids = registro[11].split(",")
                         telefones = registro[12].split(",")
@@ -57,7 +56,7 @@ class ContatoRepository:
         except Exception as e:
             print(e)
         finally:
-            DatabaseConfig.desconectar(conn)
+            DatabaseConfig.desconectar()
     @staticmethod
     def consultar_contato(id: int):
         comando = """
@@ -89,7 +88,7 @@ class ContatoRepository:
             cursor.execute(comando, (id,))
             registro = cursor.fetchone()
             if registro and not (len(set(registro)) == 1 and list(set(registro))[0] is None):
-                contato = Contato(id=registro[0], nome=registro[1], data_nascimento=registro[2], endereco=Endereco(id=registro[3], rua=registro[4], numero=registro[5], complemento=registro[6], bairro=registro[7], municipio=registro[8], estado=registro[9], cep=registro[10]))
+                contato = Contato(id=registro[0], nome=registro[1], data_nascimento=registro[2], endereco=Endereco(id=registro[3], rua=registro[4], numero=registro[5], complemento=registro[6], bairro=registro[7], municipio=registro[8], estado=registro[9], cep=registro[10], contato_id=registro[0]))
                 if registro[11] is not None and registro[12] is not None:
                     ids = registro[11].split(",")
                     telefones = registro[12].split(",")
@@ -147,6 +146,12 @@ class ContatoRepository:
         parametros = []
         nome = data.get("nome")
         data_nascimento = data.get("data_nascimento")
+        endereco = data.get("endereco")
+        endereco_id = None
+        emails = data.get("emails")
+        emails_id = []
+        telefones = data.get("telefones")
+        telefones_id = []
         if nome:
             values.append("nome = ?")
             parametros.append(nome)
@@ -157,15 +162,25 @@ class ContatoRepository:
         if values:
             comando = f"UPDATE contatos SET {", ".join(values)} WHERE id = ?;"
             try:
-                conn = DatabaseConfig.conectar()
-                cursor = conn.cursor()
+                DatabaseConfig.conectar()
+                cursor = DatabaseConfig.conn.cursor()
                 cursor.execute(comando, tuple(parametros))
-                conn.commit()
-                return id
+                if endereco:
+                    endereco_id = EnderecoRepository.atualizar_endereco(endereco)
+                if emails:
+                    for email in emails:
+                        email_id = EmailRepository.atualizar_email(email)
+                        emails_id.append(email_id)
+                if telefones:
+                    for telefone in telefones:
+                        telefone_id = TelefoneRepository.atualizar_telefone(telefone)
+                        telefones_id.append(telefone_id)
+                DatabaseConfig.conn.commit()
+                return (id, endereco_id, emails_id, telefones_id)
             except Exception as e:
                 print(e)
             finally:
-                DatabaseConfig.desconectar(conn)
+                DatabaseConfig.desconectar()
     @staticmethod
     def remover_contato(id: int):
         comando = "DELETE FROM contatos WHERE id = ?;"

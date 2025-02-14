@@ -23,27 +23,43 @@ class EnderecoRepository:
             raise Exception(e)
     @staticmethod
     def atualizar_endereco(data: dict):
-        id = data.get("contact_id")
         values = []
         parametros = []
-        nome = data.get("nome")
-        data_nascimento = data.get("data_nascimento")
-        if nome:
-            values.append("nome = ?")
-            parametros.append(nome)
-        if data_nascimento:
-            values.append("data_nascimento = ?")
-            parametros.append(data_nascimento)
+        id = data.get("id")
+        rua = data.get("rua")
+        numero = data.get("numero")
+        complemento = data.get("complemento")
+        bairro = data.get("bairro")
+        municipio = data.get("municipio")
+        estado = data.get("estado")
+        cep = data.get("cep")
+        if rua:
+            values.append("rua = ?")
+            parametros.append(rua)
+        if numero:
+            values.append("numero = ?")
+            parametros.append(numero)
+        if complemento:
+            values.append("complemento = ?")
+            parametros.append(complemento)
+        if bairro:
+            values.append("bairro = ?")
+            parametros.append(bairro)
+        if municipio:
+            values.append("municipio = ?")
+            parametros.append(municipio)
+        if estado:
+            values.append("estado = ?")
+            parametros.append(estado)
+        if cep:
+            values.append("cep = ?")
+            parametros.append(cep)
         parametros.append(id)
         if values:
-            comando = f"UPDATE contatos SET {", ".join(values)} WHERE id = ?;"
+            comando = f"UPDATE enderecos SET {", ".join(values)} WHERE id = ?;"
             try:
-                conn = DatabaseConfig.conectar()
-                cursor = conn.cursor()
+                cursor = DatabaseConfig.conn.cursor()
                 cursor.execute(comando, tuple(parametros))
-                conn.commit()
                 return id
             except Exception as e:
-                print(e)
-            finally:
-                DatabaseConfig.desconectar(conn)
+                raise Exception(e)
