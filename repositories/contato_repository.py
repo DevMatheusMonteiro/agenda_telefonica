@@ -40,7 +40,10 @@ class ContatoRepository:
             registros = cursor.fetchall()
             if registros: 
                 for registro in registros:
-                    contato = Contato(id=registro[0], nome=registro[1], data_nascimento=registro[2], endereco=Endereco(id=registro[3], rua=registro[4], numero=registro[5], complemento=registro[6], bairro=registro[7], municipio=registro[8], estado=registro[9], cep=registro[10], contato_id=registro[0]))
+                    contato = Contato(id=registro[0], nome=registro[1], data_nascimento=registro[2])
+                    if registro[3]:
+                        endereco = Endereco(id=registro[3], rua=registro[4], numero=registro[5], complemento=registro[6], bairro=registro[7], municipio=registro[8], estado=registro[9], cep=registro[10], contato_id=contato.id)
+                        contato.endereco = endereco
                     if registro[11] is not None and registro[12] is not None:
                         ids = registro[11].split(",")
                         telefones = registro[12].split(",")
@@ -88,7 +91,10 @@ class ContatoRepository:
             cursor.execute(comando, (id,))
             registro = cursor.fetchone()
             if registro and not (len(set(registro)) == 1 and list(set(registro))[0] is None):
-                contato = Contato(id=registro[0], nome=registro[1], data_nascimento=registro[2], endereco=Endereco(id=registro[3], rua=registro[4], numero=registro[5], complemento=registro[6], bairro=registro[7], municipio=registro[8], estado=registro[9], cep=registro[10], contato_id=registro[0]))
+                contato = Contato(id=registro[0], nome=registro[1], data_nascimento=registro[2])
+                if registro[3]:
+                        endereco = Endereco(id=registro[3], rua=registro[4], numero=registro[5], complemento=registro[6], bairro=registro[7], municipio=registro[8], estado=registro[9], cep=registro[10], contato_id=contato.id)
+                        contato.endereco = endereco
                 if registro[11] is not None and registro[12] is not None:
                     ids = registro[11].split(",")
                     telefones = registro[12].split(",")
@@ -106,9 +112,9 @@ class ContatoRepository:
             DatabaseConfig.desconectar()
     @staticmethod
     def criar_contato(data: dict):
+        criar_contato = "INSERT INTO contatos (nome, data_nascimento) VALUES (?, ?) RETURNING id;"
         nome = data.get("nome")
         data_nascimento = data.get("data_nascimento")
-        criar_contato = "INSERT INTO contatos (nome, data_nascimento) VALUES (?, ?) RETURNING id;"
         endereco = data.get("endereco")
         emails = data.get("emails")
         telefones = data.get("telefones")
@@ -152,10 +158,10 @@ class ContatoRepository:
         emails_id = []
         telefones = data.get("telefones")
         telefones_id = []
-        if nome:
+        if nome and nome.strip() != "":
             values.append("nome = ?")
             parametros.append(nome)
-        if data_nascimento:
+        if data_nascimento and data_nascimento.strip() != "":
             values.append("data_nascimento = ?")
             parametros.append(data_nascimento)
         parametros.append(id)
@@ -185,12 +191,12 @@ class ContatoRepository:
     def remover_contato(id: int):
         comando = "DELETE FROM contatos WHERE id = ?;"
         try:
-            conn = DatabaseConfig.conectar()
-            cursor = conn.cursor()
+            DatabaseConfig.conectar()
+            cursor = DatabaseConfig.conn.cursor()
             cursor.execute(comando, (id,))
-            conn.commit()
+            DatabaseConfig.conn.commit()
             return id
         except Exception as e:
             print(e)
         finally:
-            DatabaseConfig.desconectar(conn)
+            DatabaseConfig.desconectar()

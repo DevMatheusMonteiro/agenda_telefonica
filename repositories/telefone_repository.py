@@ -1,5 +1,21 @@
+from models.telefone import Telefone
 from database.database_config import DatabaseConfig
 class TelefoneRepository:
+    @staticmethod
+    def consultar_telefone(id:int):
+        comando = "SELECT * FROM telefones WHERE id = ?"
+        try:
+            DatabaseConfig.conectar()
+            cursor = DatabaseConfig.conn.cursor()
+            cursor.execute(comando, (id,))
+            registro = cursor.fetchone()
+            if registro:
+                telefone = Telefone(id=registro[0], telefone=registro[1], contato_id=registro[2])
+                return telefone
+        except Exception as e:
+            print(e)
+        finally:
+            DatabaseConfig.desconectar()
     @staticmethod
     def criar_telefone(data: dict):
         telefone = data.get("telefone")
@@ -33,3 +49,16 @@ class TelefoneRepository:
                 return id
             except Exception as e:
                 raise Exception(e)
+    @staticmethod
+    def remover_telefone(id:int):
+        comando = "DELETE FROM telefones WHERE id = ?;"
+        try:
+            DatabaseConfig.conectar()
+            cursor = DatabaseConfig.conn.cursor()
+            cursor.execute(comando, (id,))
+            DatabaseConfig.conn.commit()
+            return id
+        except Exception as e:
+            print(e)
+        finally:
+            DatabaseConfig.desconectar()
