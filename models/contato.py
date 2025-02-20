@@ -10,6 +10,8 @@ class Contato:
     __emails = []
     def __init__(self, id:int=None, nome:str=None, data_nascimento:date=None, endereco:Endereco=None):
         # self.__nome = nome
+        self.__id = id
+        self.__data_nascimento = data_nascimento
         self.__endereco = endereco
         self.__telefones = []
         self.__emails = []
