@@ -1,21 +1,16 @@
-from datetime import date
+from datetime import datetime
 from .endereco import Endereco
 from .telefone import Telefone
 from .email import Email
 class Contato:
     __id:int=None
     __nome:str=""
+    __data_nascimento:datetime=None
     __endereco:str=None
     __telefones = []
     __emails = []
-    def __init__(self, id:int=None, nome:str=None, data_nascimento:date=None, endereco:Endereco=None):
-        # self.__nome = nome
-        self.__id = id
-        self.__data_nascimento = data_nascimento
-        self.__endereco = endereco
-        self.__telefones = []
-        self.__emails = []
-        self.validar_contato(nome=nome)
+    def __init__(self, id:int=None, nome:str=None, data_nascimento:datetime=None, endereco:Endereco=None):
+        self.validar_contato(id=id,nome=nome, data_nascimento=data_nascimento, endereco=endereco)
         
     @property
     def id(self):
@@ -24,8 +19,11 @@ class Contato:
     def nome(self):
         return self.__nome
     
-    def validar_contato(self, nome):
+    def validar_contato(self, id:int, nome:str, data_nascimento:datetime, endereco:Endereco):
+        self.id = id
         self.nome = nome
+        self.data_nascimento = data_nascimento
+        self.endereco = endereco
         
     @nome.setter
     def nome(self, nome:str):
@@ -36,10 +34,17 @@ class Contato:
     def data_nascimento(self):
         return self.__data_nascimento
     @data_nascimento.setter
-    def data_nascimento(self, data_nascimento:date|str):
-        if not isinstance(data_nascimento, date) or (isinstance(data_nascimento, str) and data_nascimento.strip() == ""):
+    def data_nascimento(self, data_nascimento:datetime|str):
+        if not isinstance(data_nascimento, datetime) or (isinstance(data_nascimento, str) and self.__validar_data_nascimento(data_nascimento)):
             return "Campo data_nascimento inválido."
         self.__data_nascimento = data_nascimento
+    def __validar_data_nascimento(self, data_nascimento:datetime):
+        try:
+            datetime.strptime(data_nascimento, "%Y-%m-%d")
+            return True
+        except:
+            return False
+
     @property
     def endereco(self):
         return self.__endereco
