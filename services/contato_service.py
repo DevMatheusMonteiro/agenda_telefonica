@@ -1,4 +1,4 @@
-from repositories.contato_repository import ContatoRepository
+from repositories.contato_repository import ContatoRepository, Contato, Endereco, Telefone, Email, EmailRepository
 class ContatoService:
     @staticmethod
     def consultar_contatos():
@@ -19,12 +19,12 @@ class ContatoService:
         endereco = data.get("endereco")
         emails = data.get("emails")
         telefones = data.get("telefones")
-        if not nome or (nome and nome.strip() == ""):
+        if not nome or nome.strip() == "":
             return "Nome é obrigatório."
-        if not data_nascimento or (data_nascimento and data_nascimento.strip() == ""):
+        if not data_nascimento or (isinstance(data_nascimento, str) and data_nascimento.strip() == ""):
             return "Data de nascimento é obrigatória."
         if endereco:
-            if any(not value or value.strip() == "" for key, value in endereco.items() if key != "complemento"):
+            if any(not value or value.strip() == "" for key, value in endereco.items() if key not in ["complemento", "id", "contato_id"]):
                 return "Campos de endereço inválidos."
         if emails:
             for email in emails:
@@ -39,5 +39,14 @@ class ContatoService:
     def atualizar_contato(data:dict):
         contato = ContatoRepository.consultar_contato(data.get("id"))
         if not contato:
-            return f"Contato com o id {data.get("id")} não encontrado"
-        
+            return print(f"Contato com o id {data.get("id")} não encontrado")
+        nome = data.get("nome")
+        data_nascimento = data.get("data_nascimento")
+        if nome and contato.nome != nome:
+            if nome.strip() == "":
+                return "Campo nome inválido."
+            contato.nome = nome
+        if data_nascimento and contato.data_nascimento != data_nascimento:
+            if isinstance(data_nascimento, str) and data_nascimento.strip() == "":
+                return "Campo data de nascimento inválido."
+            contato.data_nascimento = data_nascimento

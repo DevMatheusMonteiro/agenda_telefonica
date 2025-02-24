@@ -16,6 +16,20 @@ class EmailRepository:
             print(e)
         finally:
             DatabaseConfig.desconectar()
+    def consultar_por_email(data:dict):
+        comando = "SELECT * FROM emails WHERE email = ? and contato_id = ?"
+        try:
+            DatabaseConfig.conectar()
+            cursor = DatabaseConfig.conn.cursor()
+            cursor.execute(comando, (data["email"], data["contato_id"]))
+            registro = cursor.fetchone()
+            if registro:
+                email = Email(id=registro[0], email=registro[1], contato_id=registro[2])
+                return email
+        except Exception as e:
+            print(e)
+        finally:
+            DatabaseConfig.desconectar()
     @staticmethod
     def criar_email(data: dict):
         email = data.get("email")

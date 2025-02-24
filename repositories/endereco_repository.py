@@ -42,42 +42,32 @@ class EnderecoRepository:
         values = []
         parametros = []
         id = data.get("id")
-        rua = data.get("rua")
-        numero = data.get("numero")
-        complemento = data.get("complemento")
-        bairro = data.get("bairro")
-        municipio = data.get("municipio")
-        estado = data.get("estado")
-        cep = data.get("cep")
-        if rua and rua.strip() != "":
-            values.append("rua = ?")
-            parametros.append(rua)
-        if numero and numero.strip() != "":
-            values.append("numero = ?")
-            parametros.append(numero)
-        values.append("complemento = ?")
-        parametros.append(complemento)
-        if bairro and bairro.strip() != "":
-            values.append("bairro = ?")
-            parametros.append(bairro)
-        if municipio and municipio.strip() != "":
-            values.append("municipio = ?")
-            parametros.append(municipio)
-        if estado and estado.strip() != "":
-            values.append("estado = ?")
-            parametros.append(estado)
-        if cep and cep.strip() != "":
-            values.append("cep = ?")
-            parametros.append(cep)
+        del data["id"]
+        if data.get("contato_id"): del data["contato_id"]
+        for key, value in data.items():
+            if (key == "complemento" 
+                and (value is None or (isinstance(value, str) and value.strip() != ""))):
+                values.append(f"{key} = ?")
+                parametros.append(value)
+            elif isinstance(value, str) and value.strip() != "":
+                values.append(f"{key} = ?")
+                parametros.append(value)
         parametros.append(id)
+        print(", ".join(values))
+        print(parametros)
         if values:
+            DatabaseConfig.conectar()
             comando = f"UPDATE enderecos SET {", ".join(values)} WHERE id = ?;"
             try:
                 cursor = DatabaseConfig.conn.cursor()
                 cursor.execute(comando, tuple(parametros))
+                DatabaseConfig.conn.commit()
+                print("ATUALIZADO COM SUCESSO")
                 return id
             except Exception as e:
-                raise Exception(e)
+                print(e)
+            finally:
+                DatabaseConfig.desconectar()
     @staticmethod
     def remover_endereco(id:int):
         comando = "DELETE FROM enderecos WHERE id = ?;"

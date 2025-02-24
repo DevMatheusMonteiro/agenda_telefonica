@@ -4,47 +4,44 @@ from .telefone import Telefone
 from .email import Email
 class Contato:
     __id:int=None
-    __nome:str=""
+    __nome:str=None
     __data_nascimento:datetime=None
-    __endereco:str=None
+    __endereco:Endereco=None
     __telefones = []
     __emails = []
-    def __init__(self, id:int=None, nome:str=None, data_nascimento:datetime=None, endereco:Endereco=None):
+    def __init__(self, id:int=None, nome:str=None, data_nascimento:datetime|str=None, endereco:Endereco=None):
         self.validar_contato(id=id,nome=nome, data_nascimento=data_nascimento, endereco=endereco)
-        
-    @property
-    def id(self):
-        return self.__id
-    @property
-    def nome(self):
-        return self.__nome
-    
-    def validar_contato(self, id:int, nome:str, data_nascimento:datetime, endereco:Endereco):
+    def validar_contato(self, id:int, nome:str, data_nascimento:datetime|str, endereco:Endereco):
         self.id = id
         self.nome = nome
         self.data_nascimento = data_nascimento
         self.endereco = endereco
-        
+    @property
+    def id(self):
+        return self.__id
+    @id.setter
+    def id(self, id:int):
+        self.__id = id
+    @property
+    def nome(self):
+        return self.__nome
     @nome.setter
     def nome(self, nome:str):
-        if nome is None or (isinstance(nome, str) and nome.strip() == ""):
-            print("Campo nome inválido.")
-        self.__nome = nome
+        if (isinstance(nome, str) and nome.strip() != ""):
+            self.__nome = nome
     @property
     def data_nascimento(self):
         return self.__data_nascimento
     @data_nascimento.setter
     def data_nascimento(self, data_nascimento:datetime|str):
-        if not isinstance(data_nascimento, datetime) or (isinstance(data_nascimento, str) and self.__validar_data_nascimento(data_nascimento)):
-            return "Campo data_nascimento inválido."
-        self.__data_nascimento = data_nascimento
+        if isinstance(data_nascimento, datetime) or (isinstance(data_nascimento, str) and self.__validar_data_nascimento(data_nascimento)):
+            self.__data_nascimento = data_nascimento
     def __validar_data_nascimento(self, data_nascimento:datetime):
         try:
             datetime.strptime(data_nascimento, "%Y-%m-%d")
             return True
         except:
             return False
-
     @property
     def endereco(self):
         return self.__endereco

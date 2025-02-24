@@ -1,18 +1,20 @@
-# from repositories.contato_repository import ContatoRepository
-# from services.contato_service import ContatoService
-# from repositories.endereco_repository import EnderecoRepository
-# from repositories.email_repository import EmailRepository
-# from repositories.telefone_repository import TelefoneRepository
-# from models.contato import Contato
-# from database.database_config import DatabaseConfig
-# # DatabaseConfig.create_tables()
-# create_contact = {'nome': 'Patrícia Carvalho', 'data_nascimento': '1987-01-28', 'endereco': {'rua': 'Rua 7 de Setembro', 'numero': '789', 'complemento': None, 'bairro': 'Boa Viagem', 'municipio': 'Recife', 'estado': 'PE', 'cep': '51020-320'}, 'telefones': [{'telefone': 'TESTE 31922223333 TESTE'}, {'telefone': '31922224444 TESTE TESTE'}], 'emails': [{'email': 'patricia@email.com'}]}
-# # create_contact = {'id': 12, 'nome': 'Patrícia Carvalho', 'data_nascimento': '1987-01-28', 'endereco': {'id': 12, 'rua': 'Rua 7 de Setembro', 'numero': '789', 'complemento': None, 'bairro': 'Boa Viagem', 'municipio': 'Recife', 'estado': 'PE', 'cep': '51020-320'}, 'telefones': [{'id': '1002', 'telefone': 'TESTE 31922223333 TESTE', 'contato_id': 12}, {'id': '25', 'telefone': '31922224444 TESTE TESTE', 'contato_id': 12}], 'emails': [{'id': '12', 'email': 'patricia@email.com', 'contato_id': 12}]}
-# # print(ContatoService.consultar_contatos())
-# print(ContatoService.consultar_contato(1))
-
-# # ContatoService.criar_contato(create_contact)
-# # contato = Contato(nome="")
-from datetime import date
-
-# print(date.strftime(date_string, format_string))
+from repositories.contato_repository import ContatoRepository
+from services.contato_service import ContatoService
+from services.endereco_service import EnderecoService
+from repositories.endereco_repository import EnderecoRepository
+from repositories.email_repository import EmailRepository
+from repositories.telefone_repository import TelefoneRepository
+from models.contato import Contato
+from models.endereco import Endereco
+from database.database_config import DatabaseConfig
+from datetime import datetime
+# DatabaseConfig.create_tables()
+create_contact = {'id': 2, 'nome': 'Roberta Souza', 'data_nascimento': '1992-03-22', 'endereco': {'id': 2, 'rua': 'RUA CARIOCA', 'numero': "40", 'complemento': None, 'bairro': 'BARRA', 'municipio': 'RIO DE JANEIRO', 'estado': 'RJ', 'cep': '01511-200', 'contato_id': 2}, 'telefones': [{'id': '2', 'telefone': '21988887777', 'contato_id': 2}, {'id': '16', 'telefone': '21988889999', 'contato_id': 2}], 'emails': [{'id': '2', 'email': 'ana.souza@email.com', 'contato_id': 2}, {'id': '16', 'email': 'ana_trabalho@email.com', 'contato_id': 2}]}
+# print(ContatoService.consultar_contatos())
+# print("*****ANTES*****")
+# print(ContatoService.consultar_contato(2))
+# ContatoService.atualizar_contato(create_contact)
+# print("*****DEPOIS*****")
+# print(ContatoService.consultar_contato(2))
+EnderecoService.atualizar_endereco(create_contact["endereco"])
+# EnderecoRepository.atualizar_endereco(create_contact["endereco"])

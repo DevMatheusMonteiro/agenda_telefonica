@@ -92,7 +92,7 @@ class ContatoRepository:
             registro = cursor.fetchone()
             if registro and not (len(set(registro)) == 1 and list(set(registro))[0] is None):
                 contato = Contato(id=registro[0], nome=registro[1], data_nascimento=registro[2])
-                if registro[3]:
+                if registro[3] is not None:
                         endereco = Endereco(id=registro[3], rua=registro[4], numero=registro[5], complemento=registro[6], bairro=registro[7], municipio=registro[8], estado=registro[9], cep=registro[10], contato_id=contato.id)
                         contato.endereco = endereco
                 if registro[11] is not None and registro[12] is not None:
@@ -152,12 +152,6 @@ class ContatoRepository:
         parametros = []
         nome = data.get("nome")
         data_nascimento = data.get("data_nascimento")
-        endereco = data.get("endereco")
-        endereco_id = None
-        emails = data.get("emails")
-        emails_id = []
-        telefones = data.get("telefones")
-        telefones_id = []
         if nome and nome.strip() != "":
             values.append("nome = ?")
             parametros.append(nome)
@@ -171,18 +165,8 @@ class ContatoRepository:
                 DatabaseConfig.conectar()
                 cursor = DatabaseConfig.conn.cursor()
                 cursor.execute(comando, tuple(parametros))
-                if endereco:
-                    endereco_id = EnderecoRepository.atualizar_endereco(endereco)
-                if emails:
-                    for email in emails:
-                        email_id = EmailRepository.atualizar_email(email)
-                        emails_id.append(email_id)
-                if telefones:
-                    for telefone in telefones:
-                        telefone_id = TelefoneRepository.atualizar_telefone(telefone)
-                        telefones_id.append(telefone_id)
                 DatabaseConfig.conn.commit()
-                return (id, endereco_id, emails_id, telefones_id)
+                return id
             except Exception as e:
                 print(e)
             finally:
