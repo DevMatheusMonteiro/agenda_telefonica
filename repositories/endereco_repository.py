@@ -31,12 +31,16 @@ class EnderecoRepository:
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;
             """
         try:
+            DatabaseConfig.conectar()
             cursor = DatabaseConfig.conn.cursor()
             cursor.execute(comando, (rua, numero, complemento, bairro, municipio, estado, cep, contato_id))
             id = cursor.fetchone()[0]
+            DatabaseConfig.conn.commit()
             return id
         except Exception as e:
-            raise Exception(e)
+            print(e)
+        finally:
+            DatabaseConfig.desconectar()
     @staticmethod
     def atualizar_endereco(data: dict):
         values = []
@@ -45,16 +49,12 @@ class EnderecoRepository:
         del data["id"]
         if data.get("contato_id"): del data["contato_id"]
         for key, value in data.items():
-            if (key == "complemento" 
-                and (value is None or (isinstance(value, str) and value.strip() != ""))):
-                values.append(f"{key} = ?")
-                parametros.append(value)
-            elif isinstance(value, str) and value.strip() != "":
+            if ((key == "complemento"
+                and (value is None or (isinstance(value, str) and value.strip() != "")))
+                or (isinstance(value, str) and value.strip() != "")):
                 values.append(f"{key} = ?")
                 parametros.append(value)
         parametros.append(id)
-        print(", ".join(values))
-        print(parametros)
         if values:
             DatabaseConfig.conectar()
             comando = f"UPDATE enderecos SET {", ".join(values)} WHERE id = ?;"
@@ -62,7 +62,6 @@ class EnderecoRepository:
                 cursor = DatabaseConfig.conn.cursor()
                 cursor.execute(comando, tuple(parametros))
                 DatabaseConfig.conn.commit()
-                print("ATUALIZADO COM SUCESSO")
                 return id
             except Exception as e:
                 print(e)
