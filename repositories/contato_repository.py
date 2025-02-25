@@ -38,7 +38,7 @@ class ContatoRepository:
             cursor = DatabaseConfig.conn.cursor()
             cursor.execute(comando)
             registros = cursor.fetchall()
-            if registros: 
+            if registros:
                 for registro in registros:
                     contato = Contato(id=registro[0], nome=registro[1], data_nascimento=registro[2])
                     if registro[3]:
@@ -115,32 +115,13 @@ class ContatoRepository:
         criar_contato = "INSERT INTO contatos (nome, data_nascimento) VALUES (?, ?) RETURNING id;"
         nome = data.get("nome")
         data_nascimento = data.get("data_nascimento")
-        endereco = data.get("endereco")
-        emails = data.get("emails")
-        telefones = data.get("telefones")
         try:
             DatabaseConfig.conectar()
             cursor = DatabaseConfig.conn.cursor()
             cursor.execute(criar_contato, (nome, data_nascimento))
-            contato_id = cursor.fetchone()[0]
-            endereco_id = None
-            emails_id = []
-            telefones_id = []
-            if endereco:
-                endereco["contato_id"] = contato_id
-                endereco_id = EnderecoRepository.criar_endereco(endereco)
-            if emails:
-                for email in emails:
-                    email["contato_id"] = contato_id
-                    email_id = EmailRepository.criar_email(email)
-                    emails_id.append(email_id)
-            if telefones:
-                for telefone in telefones:
-                    telefone["contato_id"] = contato_id
-                    telefone_id = TelefoneRepository.criar_telefone(telefone)
-                    telefones_id.append(telefone_id)
+            id = cursor.fetchone()[0]
             DatabaseConfig.conn.commit()
-            return (contato_id, endereco_id, emails_id, telefones_id)
+            return id
         except Exception as e:
             print(e)
         finally:

@@ -1,4 +1,5 @@
 from repositories.endereco_repository import EnderecoRepository
+from utils.app_error import AppError
 class EnderecoService:
     @staticmethod
     def criar_endereco(data:dict):
@@ -8,7 +9,7 @@ class EnderecoService:
                     and (value is not None and (not isinstance(value, str) or value.strip() == "")))
                     or (key != "complemento" and not isinstance(value, str))
                     or (isinstance(value, str) and value.strip() == "")):
-                    return print(f"Campo '{key}' inválido.")
+                    raise AppError(message=f"Campo '{key}' de endereço inválido.")
         return EnderecoRepository.criar_endereco(data)
     @staticmethod
     def atualizar_endereco(data:dict):
